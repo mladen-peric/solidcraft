@@ -52,6 +52,7 @@ fn clearing_edited_extrude_offset_keeps_the_field_available_for_replacement() {
 #[test]
 fn new_extrude_keeps_empty_offset_until_profile_plane_is_selected() {
     let mut h = make(json!({}));
+    h.app.preferences.extrude_default_distance = 10.0;
     h.app.run("timeline.delete", json!({"feature":"Depth"})).unwrap();
     let sketch = h.app.session.doc.find_feature("Base").unwrap().id;
     h.app.session.selection = vec![solidcraft_engine::Sel::Profile { sketch, index: 0 }];

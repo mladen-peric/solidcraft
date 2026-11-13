@@ -573,6 +573,7 @@ mod extrude_view_preference {
     /// A finished sketch on XY, seen from the top, with the two preferences set; and that view.
     fn from_the_top(isometric: bool, back: bool) -> (Harness, Camera) {
         let mut h = Harness::new();
+        h.app.preferences.extrude_default_distance = 10.0;
         h.app.preferences.extrude_view_isometric = isometric;
         h.app.preferences.extrude_view_return = back;
         h.app.run("sketch.create", json!({"plane": "XY"})).unwrap();
@@ -675,6 +676,7 @@ fn extrude_from_an_open_used_sketch_picks_its_new_profile() {
     use serde_json::json;
     for close in ["OK", "Cancel"] {
         let mut h = crate::scenario::Harness::new();
+        h.app.preferences.extrude_default_distance = 10.0;
         h.app.home.open = false;
         let sketch = h.app.run("sketch.create", json!({"plane": "XY"})).unwrap()["sketch"].as_u64().unwrap();
         h.app.run("sketch.rectangle.two_point", json!({"p0": [0, 0], "p1": [40, 30]})).unwrap();

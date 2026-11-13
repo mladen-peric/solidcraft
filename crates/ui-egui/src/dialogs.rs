@@ -949,7 +949,7 @@ impl Dialog {
             }
             "solid.extrude" => Dialog::new(
                 Kind::Extrude {
-                    distance: length_default(s, "10"),
+                    distance: length_default(s, &extrude_start_distance(app)),
                     direction: 0,
                     operation: usize::from(has_bodies),
                     auto_op: true,
@@ -3549,6 +3549,11 @@ fn error_rows(app: &mut SolveApp, ctx: &egui::Context, d: &mut Dialog, ui: &mut 
         if matches!(d.kind, Kind::SketchModify(_)) && awaiting_selection(&error) {
             return;
         }
+        // Extrude opens at 0 by default: no depth yet is where it starts, not a failure. OK stays
+        // off and no preview is drawn until a distance is typed or pulled.
+        if matches!(d.kind, Kind::Extrude { .. }) && error.ends_with("extrude distance is zero") {
+            return;
+        }
         // Other dialogs say so on OK ("select a plane first", "pick an axis"): that is what is
         // left to pick, not a failure, so it is shown plainly, with no Create Issue (#3292, #3773).
         // An operation on a part the kernel refuses: the part, what is wrong with it, and what
@@ -4980,6 +4985,12 @@ fn fillet_kind(size: &str, chamfer: bool) -> Kind {
 /// number would.
 pub(crate) fn length_default(s: &Session, number: &str) -> String {
     crate::length_input::default(&s.doc, number)
+}
+
+/// The number Extrude's distance field opens with: the `extrude_default_distance` preference
+/// (kept to 0…1000 when preferences are read or set).
+fn extrude_start_distance(app: &SolveApp) -> String {
+    app.preferences.extrude_default_distance.to_string()
 }
 
 /// A new Solid Fillet's radius: the size the tool ships with (2 mm), shown in the design's unit

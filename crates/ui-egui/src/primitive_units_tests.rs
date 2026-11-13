@@ -434,7 +434,7 @@ fn editing_a_coil_reopens_its_dialog_filled_in_and_ok_redefines_it() {
 #[test]
 fn operation_length_defaults_follow_every_design_unit() {
     const CASES: &[(&str, &[&str])] = &[
-        ("solid.extrude", &["10", "10", "", "", "2", "1"]),
+        ("solid.extrude", &["0", "10", "", "", "2", "1"]),
         ("solid.chamfer", &["1", "1"]),
         ("solid.shell", &["2"]),
         ("solid.hole", &["5", "10", "9", "3", "10", ""]),
@@ -504,7 +504,8 @@ fn operation_length_defaults_keep_the_fillet_radius_at_the_shipped_size() {
 /// design's unit reads, and the preference brings the old Fillet default back.
 #[test]
 fn operation_length_defaults_keep_every_other_operation_on_the_design_unit() {
-    let h = design("in");
+    let mut h = design("in");
+    h.app.preferences.extrude_default_distance = 10.0;
     let mut d = crate::dialogs::Dialog::for_command(&h.app, "solid.extrude").unwrap_or_else(|| panic!("no dialog for solid.extrude"));
     let values: Vec<_> = crate::length_input::fields(&h.app.session.doc, &mut d.kind).into_iter().map(|v| v.clone()).collect();
     assert_eq!(values[0], "10 in", "a new Extrude in an inch design");
